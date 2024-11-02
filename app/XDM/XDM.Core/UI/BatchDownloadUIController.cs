@@ -13,6 +13,7 @@ namespace XDM.Core.UI
 {
     public class BatchDownloadUIController
     {
+        private static readonly char[] lineSeperator = { '\r', '\n' };
         private IBatchDownloadView view;
         public int BatchSize { get; private set; } = 0;
 
@@ -46,9 +47,9 @@ namespace XDM.Core.UI
 
         private void OnOKClicked()
         {
-            var links = this.view.IsBatchMode? GenerateBatchLink()?.Select(
-                    x => (IRequestData)new SingleSourceHTTPDownloadInfo { Uri = x.ToString() }):
-                    this.view.UrlListText.Split('\r','\n').Select(x => (IRequestData)new SingleSourceHTTPDownloadInfo { Uri = x });
+            var links = this.view.IsBatchMode ?
+                GenerateBatchLink()?.Select(x => (IRequestData)new SingleSourceHTTPDownloadInfo { Uri = x.ToString() }) :
+                this.view.UrlListText.Split(lineSeperator, StringSplitOptions.RemoveEmptyEntries).Select(x => (IRequestData)new SingleSourceHTTPDownloadInfo { Uri = x });
 
             if (links == null || !links.Any())
             {
